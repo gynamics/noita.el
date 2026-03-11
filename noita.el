@@ -258,19 +258,13 @@ If region is active, project active region."
   (noita-project-str
    (apply #'buffer-substring-no-properties (noita--region-or-line))))
 
-(defun noita--strip-whitespaces (s)
-  "Stripping whitespace characters from string S, return a char list."
-  (mapcan (lambda (c)
-            (unless (member c '(?\s ?\n ?\v ?\t)) (list c)))
-          (string-to-list s)))
-
 (defun noita-join-keys (bgn end)
   "Join characters in (BGN END) into one symbol by stripping spaces."
   (interactive "r")
   (when-let ((s (buffer-substring-no-properties bgn end)))
     (goto-char bgn)
     (kill-region bgn end)
-    (insert (apply #'string (noita--strip-whitespaces s)))))
+    (insert (concat (split-string s)))))
 
 (defun noita-explode ()
   "Explode symbol at point to a space-separated character sequence string."
@@ -295,7 +289,7 @@ If region is active, project active region."
 
 (defun noita-fold-keys (bgn end)
   "Fold repeated keys in (BGN END)."
-  (interactive (list (noita--region-or-line)))
+  (interactive (noita--region-or-line))
   (when-let ((s (buffer-substring-no-properties bgn end)))
     (goto-char bgn)
     (kill-region bgn end)
@@ -303,9 +297,9 @@ If region is active, project active region."
      (mapconcat
       (lambda (c)
         (if (> (cdr c) 4)
-            (format "C-u %d %c" (cdr c) (car c))
-          (mapconcat #'identity (make-list (cdr c) (list (car c))) " ")))
-      (noita--fold-list (noita--strip-whitespaces s))
+            (format "C-u %d %s" (cdr c) (car c))
+          (mapconcat #'identity (make-list (cdr c) (car c)) " ")))
+      (noita--fold-list (split-string s))
       " "))))
 
 (defun noita-cbuf-cleanup ()
