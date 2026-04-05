@@ -119,13 +119,13 @@ Bound them to lexical variables cbuf and ibuf, then execute BODY."
 (defun noita-switch-ibuf ()
   "Switch to its noita control buffer if it exists."
   (interactive)
-  (when-let ((ibuf (noita--assoc-ibuf)))
+  (when-let* ((ibuf (noita--assoc-ibuf)))
     (switch-to-buffer-other-window ibuf)))
 
 (defun noita-switch-cbuf ()
   "Switch to its noita control buffer if it exists."
   (interactive)
-  (when-let ((cbuf (noita--assoc-cbuf)))
+  (when-let* ((cbuf (noita--assoc-cbuf)))
     (switch-to-buffer-other-window cbuf)))
 
 (defun noita-dye (s)
@@ -165,7 +165,7 @@ Bound them to lexical variables cbuf and ibuf, then execute BODY."
 (defun noita-lift-key ()
   "Record keys to noita control buffer."
   (unless (noita--local-value 'noita--bypass-lift-key)
-    (when-let ((cbuf (noita--assoc-cbuf))
+    (when-let* ((cbuf (noita--assoc-cbuf))
                (cmd this-command)
                (keys (this-command-keys)))
       (when-let* ((prefix (noita--local-value 'noita--prefix-keys))
@@ -191,7 +191,7 @@ Bound them to lexical variables cbuf and ibuf, then execute BODY."
 (defun noita-revolve (n)
   "Project N th line in noita control buffer."
   (interactive "nProject Line: ")
-  (when-let ((cbuf (noita--assoc-cbuf)))
+  (when-let* ((cbuf (noita--assoc-cbuf)))
     (with-current-buffer cbuf
       (let ((m (count-lines (point-min) (point-max))))
         (when (<= 1 n m)
@@ -274,7 +274,7 @@ If region is active, project active region."
 (defun noita-join-keys (bgn end)
   "Join characters in (BGN END) into one symbol by stripping spaces."
   (interactive "r")
-  (when-let ((s (buffer-substring-no-properties bgn end)))
+  (when-let* ((s (buffer-substring-no-properties bgn end)))
     (goto-char bgn)
     (kill-region bgn end)
     (insert (concat (split-string s)))))
@@ -282,7 +282,7 @@ If region is active, project active region."
 (defun noita-explode ()
   "Explode symbol at point to a space-separated character sequence string."
   (interactive)
-  (when-let ((bounds (bounds-of-thing-at-point 'symbol))
+  (when-let* ((bounds (bounds-of-thing-at-point 'symbol))
              (s (buffer-substring-no-properties (car bounds) (cdr bounds))))
     (goto-char (car bounds))
     (kill-region (car bounds) (cdr bounds))
@@ -303,7 +303,7 @@ If region is active, project active region."
 (defun noita-fold-keys (bgn end)
   "Fold repeated keys in (BGN END)."
   (interactive (noita--region-or-line))
-  (when-let ((s (buffer-substring-no-properties bgn end)))
+  (when-let* ((s (buffer-substring-no-properties bgn end)))
     (goto-char bgn)
     (kill-region bgn end)
     (insert
@@ -322,7 +322,7 @@ If region is active, project active region."
 
 (defun noita-cbuf-detach ()
   "When kill noita control buffer, detach it from image buffer."
-  (when-let ((ibuf (noita--assoc-ibuf)))
+  (when-let* ((ibuf (noita--assoc-ibuf)))
     (with-current-buffer ibuf
       (noita-ibuf-cleanup))
     (noita-cbuf-cleanup)))
