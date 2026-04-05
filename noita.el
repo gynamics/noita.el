@@ -186,7 +186,19 @@ Bound them to lexical variables cbuf and ibuf, then execute BODY."
     (with-current-buffer ibuf
       (setq-local noita--bypass-lift-key (not v)))))
 
-;; FR: Implement a funnel for keys for compression
+;; FR: Implement a funnel for key compression
+
+(defun noita-revolve (n)
+  "Project N th line in noita control buffer."
+  (interactive "nProject Line: ")
+  (when-let ((cbuf (noita--assoc-cbuf)))
+    (with-current-buffer cbuf
+      (let ((m (count-lines (point-min) (point-max))))
+        (when (<= 1 n m)
+          (save-excursion
+            (goto-char (point-min))
+            (forward-line (1- n))
+            (noita-project)))))))
 
 (defun noita-minor-mode-lighter ()
   "Text for displaying noita minor mode status in modeline."
@@ -205,7 +217,8 @@ Bound them to lexical variables cbuf and ibuf, then execute BODY."
 (defvar-keymap noita-minor-mode-map
   :doc "Keymap for noita minor mode."
   "C-x C-\\" #'noita-bypass-lift-key
-  "C-x <down>" #'noita-switch-cbuf)
+  "C-x <down>" #'noita-switch-cbuf
+  "C-c RET" #'noita-revolve)
 
 (defun noita-ibuf-cleanup ()
   "Clean up hooks in noita image buffer."
@@ -318,10 +331,10 @@ If region is active, project active region."
   "Noita"
   "Major mode for noita control buffer."
   (keymap-local-set "C-c C-c" #'noita-project)
-  (keymap-local-set "C-c C-\\" #'noita-bypass-lift-key)
   (keymap-local-set "C-c e" #'noita-explode)
   (keymap-local-set "C-c f" #'noita-fold-keys)
   (keymap-local-set "C-c j" #'noita-join-keys)
+  (keymap-local-set "C-x C-\\" #'noita-bypass-lift-key)
   (keymap-local-set "C-x <up>" #'noita-switch-ibuf)
   (add-hook 'kill-buffer-hook #'noita-cbuf-detach nil t)
   (add-hook 'change-major-mode-hook #'noita-cbuf-cleanup nil t))
