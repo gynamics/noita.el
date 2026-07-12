@@ -166,8 +166,8 @@ Bound them to lexical variables cbuf and ibuf, then execute BODY."
   "Record keys to noita control buffer."
   (unless (noita--local-value 'noita--bypass-lift-key)
     (when-let* ((cbuf (noita--assoc-cbuf))
-               (cmd this-command)
-               (keys (this-command-keys)))
+                (cmd this-command)
+                (keys (this-command-keys)))
       (when-let* ((prefix (noita--local-value 'noita--prefix-keys))
                   (s (key-description keys)))
         ;; don't record keys with inconsistent prefix cache
@@ -283,7 +283,7 @@ If region is active, project active region."
   "Explode symbol at point to a space-separated character sequence string."
   (interactive)
   (when-let* ((bounds (bounds-of-thing-at-point 'symbol))
-             (s (buffer-substring-no-properties (car bounds) (cdr bounds))))
+              (s (buffer-substring-no-properties (car bounds) (cdr bounds))))
     (goto-char (car bounds))
     (kill-region (car bounds) (cdr bounds))
     (insert (mapconcat 'identity (mapcar (lambda (x) (list x)) (string-to-list s)) " "))))
@@ -324,7 +324,7 @@ If region is active, project active region."
   "When kill noita control buffer, detach it from image buffer."
   (when-let* ((ibuf (noita--assoc-ibuf)))
     (with-current-buffer ibuf
-      (noita-ibuf-cleanup))
+      (noita-minor-mode -1))
     (noita-cbuf-cleanup)))
 
 (define-derived-mode noita-mode ()
